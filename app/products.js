@@ -4,6 +4,7 @@ const nanoid = require('nanoid');
 const multer = require('multer');
 const Product = require('../models/Product');
 const path = require('path');
+const auth = require('../middlewares/auth');
 
 const config = require('../config');
 
@@ -22,7 +23,7 @@ const createRouter = () => {
 
     router.get('/', async (req, res) => {
 
-        Product.find().populate('category')
+        Product.find().populate('category').populate('seller')
             .then(result => {
             res.send(result);
         }).catch(() => {
@@ -41,12 +42,11 @@ const createRouter = () => {
             });
     });
 
-    router.post('/', upload.single('photo'), (req, res) => {
+    router.post('/', upload.single('photo'), auth, (req, res) => {
         let productData = req.body;
 
-        if (req.file) {
-            productData.photo = req.file.filename;
-        }
+        productData.photo = req.file.filename;
+        productData.seller = req.user._id;
 
         const product = new Product(productData);
 
@@ -55,6 +55,20 @@ const createRouter = () => {
         }).catch((error) => {
             res.status(400).send(error);
         });
+    });
+
+    router.delete('/:id', auth, async (req, res) => {
+        const productId = req.params.id;
+        Product.findById(productId).then(product => {
+            if (product.seller == req.user._id) {
+                product.remove()
+                .then(result => res.send(result))
+                .catch(err => res.status(500).send(err));
+            } else {
+                return res.status(403).send({message: "You cannot delete someone's product"});
+            }  
+        });
+              
     });
 
     return router;

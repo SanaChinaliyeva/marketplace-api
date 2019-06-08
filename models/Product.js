@@ -24,6 +24,11 @@ const ProductSchema = new Schema({
     photo: {
         type: String,
         required: true
+    },
+    seller: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 

@@ -18,6 +18,18 @@ db.once('open', async () => {
         console.log("Collections were not present.");
     }
 
+    const [user, admin] = await User.create({
+        username: "User",
+        password: "123",
+        display_name: "Sana Chinaliyeva",
+        phone: "+7 777 777 77 77"
+    }, {
+        username: "admin",
+        password: "admin",
+        display_name: "Admin",
+        phone: "+7 777 777 77 88"
+    });
+
     const [cpuCategory, hddCategory, shoesCategory, clothesCategory] = await Category.create({
         title: "CPUs",
     }, {
@@ -33,38 +45,32 @@ db.once('open', async () => {
         description: "Core i7 8 Gen",
         category: cpuCategory._id,
         price: 20000,
-        photo: "cpu.png"
+        photo: "cpu.png",
+        seller: user._id
     }, {
         name: "Seagate 3TB",
         description: "Barracuda",
         category: hddCategory._id,
         price: 12000,
-        photo: "hdd.jpg"
+        photo: "hdd.jpg",
+        seller: admin._id
     }, {
         name: "Red Jimmy Choo trainers",
         description: "Almost new",
         category: shoesCategory._id,
         price: 700000,
-        photo: "shoes.jpg"
+        photo: "shoes.jpg",
+        seller: user._id
     }, {
         name: "White Sherri Hill dress",
         description: "Dress for prom",
         category: clothesCategory._id,
         price: 130000,
-        photo: "dress.jpg"
+        photo: "dress.jpg",
+        seller: admin._id
     });
 
-    await User.create({
-        username: "User",
-        password: "123",
-        display_name: "Sana Chinaliyeva",
-        phone: "+7 777 777 77 77"
-    }, {
-        username: "admin",
-        password: "admin",
-        display_name: "Admin",
-        phone: "+7 777 777 77 88"
-    });
+    
 
     db.close();
 
