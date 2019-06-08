@@ -12,6 +12,8 @@ const db = mongoose.connection;
 db.once('open', async () => {
     try {
         await db.dropCollection('products');
+        await db.dropCollection('users');
+        await db.dropCollection('categories');
     } catch (e) {
         console.log("Collections were not present.");
     }
