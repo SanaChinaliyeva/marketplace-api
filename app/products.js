@@ -56,16 +56,26 @@ const createRouter = () => {
 
     router.post('/', upload.single('photo'), auth, (req, res) => {
         let productData = req.body;
-
         productData.photo = req.file.filename;
         productData.seller = req.user._id;
-
-        const product = new Product(productData);
-
-        product.save().then(result => {
-            res.send(result);
-        }).catch((error) => {
-            res.status(400).send(error);
+        Category.find({title: productData.category}).then(category => {
+            productData.category = category[0]._id;
+            if (!productData.name 
+                || !productData.description 
+                || !productData.photo 
+                || !productData.price 
+                || !productData.category 
+                || !productData.seller) {
+                    res.status(400).send({message: "All fields are required"});
+            } else {
+                const product = new Product(productData);
+    
+                product.save().then(result => {
+                    res.send(result);
+                }).catch((error) => {
+                    res.status(400).send(error);
+                });
+            }
         });
     });
 
