@@ -3,6 +3,7 @@ const router = express.Router();
 const nanoid = require('nanoid');
 const multer = require('multer');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 const path = require('path');
 const auth = require('../middlewares/auth');
 
@@ -22,17 +23,28 @@ const upload = multer({storage});
 const createRouter = () => {
 
     router.get('/', async (req, res) => {
-
-        Product.find().populate('category').populate('seller')
+        if (req.query.category) {
+            Category.find({title: req.query.category}).then(cat => {
+                Product.find({category: cat[0]._id})
+                .populate('category').populate('seller')
+                .then(result => {
+                    res.send(result);
+                }).catch(() => {
+                    res.status(500).send('Internal server error');
+                });
+            })
+        } else {
+            Product.find().populate('category').populate('seller')
             .then(result => {
             res.send(result);
-        }).catch(() => {
-            res.status(500).send('Internal server error');
-        });
+            }).catch(() => {
+                res.status(500).send('Internal server error');
+            });
+        }
     });
-
     router.get('/:id', (req, res) => {
         Product.findById(req.params.id)
+            .populate('category').populate('seller')
             .then(result => {
                 if (result) res.send(result);
                 else res.sendStatus(404);
@@ -57,10 +69,12 @@ const createRouter = () => {
         });
     });
 
-    router.delete('/:id', auth, async (req, res) => {
+    router.delete('/:id', auth, (req, res) => {
         const productId = req.params.id;
-        Product.findById(productId).then(product => {
-            if (product.seller == req.user._id) {
+        Product.findById(productId)
+        .populate('seller')
+        .then(product => {
+            if (req.user._id.toString() === product.seller._id.toString()) {
                 product.remove()
                 .then(result => res.send(result))
                 .catch(err => res.status(500).send(err));
