@@ -24,7 +24,15 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    token: String
+    token: String,
+    display_name: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
+    }
 });
 
 UserSchema.pre('save', async function(next) {

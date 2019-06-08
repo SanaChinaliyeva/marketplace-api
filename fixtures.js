@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const config = require("./config");
 
 const Product = require("./models/Product");
+const Category = require("./models/Category");
 const User = require("./models/User");
 
 mongoose.connect(config.getDBPath());
@@ -15,34 +16,52 @@ db.once('open', async () => {
         console.log("Collections were not present.");
     }
 
-    const [cpuCategory, hddCategory] = await Category.create({
+    const [cpuCategory, hddCategory, shoesCategory, clothesCategory] = await Category.create({
         title: "CPUs",
-        description: "Central processor units"
     }, {
         title: "HDD",
-        description: "Hard Disk Drives"
+    }, {
+        title: "Shoes",
+    }, {
+        title: "Clothes",
     });
 
     await Product.create({
         name: "Intel Core i7",
-        model: "Core i7 8 Gen",
+        description: "Core i7 8 Gen",
         category: cpuCategory._id,
-        price: 700,
-        photo: "cpu.jpg"
+        price: 20000,
+        photo: "cpu.png"
     }, {
         name: "Seagate 3TB",
-        model: "Barracuda",
+        description: "Barracuda",
         category: hddCategory._id,
-        price: 200,
+        price: 12000,
         photo: "hdd.jpg"
+    }, {
+        name: "Red Jimmy Choo trainers",
+        description: "Almost new",
+        category: shoesCategory._id,
+        price: 700000,
+        photo: "shoes.jpg"
+    }, {
+        name: "White Sherri Hill dress",
+        description: "Dress for prom",
+        category: clothesCategory._id,
+        price: 130000,
+        photo: "dress.jpg"
     });
 
     await User.create({
         username: "User",
-        password: "123"
+        password: "123",
+        display_name: "Sana Chinaliyeva",
+        phone: "+7 777 777 77 77"
     }, {
         username: "admin",
-        password: "admin"
+        password: "admin",
+        display_name: "Admin",
+        phone: "+7 777 777 77 88"
     });
 
     db.close();

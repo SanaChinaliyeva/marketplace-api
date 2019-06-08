@@ -7,7 +7,7 @@ module.exports = {
     uploadPath: path.join(rootPath, 'public/uploads'),
     db: {
         url: "mongodb://localhost/",
-        name: "shop"
+        name: "marketplace"
     },
     getDBPath: function() {
         return this.db.url + this.db.name;
